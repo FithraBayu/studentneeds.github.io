@@ -7,18 +7,6 @@ if( !isset($_SESSION["login"]) ) {
 	exit;
 }
 
-$jumlah_pelanggan = mysqli_query($conn,"SELECT * FROM pelanggan");
-
-$data_pelanggan = mysqli_num_rows($jumlah_pelanggan);
-
-$barang = mysqli_query($conn, "SELECT * FROM produk");
-
-$total_barang = mysqli_num_rows($barang);
-
-$pesanan = mysqli_query($conn, "SELECT * FROM transaksi WHERE id_barang");
-
-$jumlah_pesanan = mysqli_num_rows($pesanan);
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -31,14 +19,17 @@ $jumlah_pesanan = mysqli_num_rows($pesanan);
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>StudentNeeds.co Admin | Dashboard</title>
+    <title>StudentNeeds.co Admin | Produk</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.0/css/dataTables.bootstrap4.min.css">
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+    
 
 </head>
 
@@ -62,7 +53,7 @@ $jumlah_pesanan = mysqli_num_rows($pesanan);
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="index.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
@@ -72,8 +63,8 @@ $jumlah_pesanan = mysqli_num_rows($pesanan);
             <hr class="sidebar-divider">
 
             <!-- List Produk -->
-            <li class="nav-item">
-                <a class="nav-link" href="dashboard-produk.php">
+            <li class="nav-item active">
+                <a class="nav-link active" href="dashboard-produk.php">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Produk List</span></a>
             </li>
@@ -149,93 +140,74 @@ $jumlah_pesanan = mysqli_num_rows($pesanan);
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Selamat Datang Administrator</h1>
-                    </div>
 
-                    <!-- Content Row -->
-                    <div class="row" style="padding-bottom: 260px;">
-
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                Pelanggan</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $data_pelanggan; ?></div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class='bx bxs-user-circle' style="color: #dddfeb; font-size:40px;"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary" style="position: absolute;">Produk List</h6>
+                            <a href="create-produk.php" class="btn btn-flat btn-primary" style="float: right;"><span class="fas fa-plus"></span>Tambah Produk</a>
                         </div>
-
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-success shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                Pendapatan</div>
-                                                <?php 
-                                                $result = mysqli_query($conn, "SELECT SUM(total_bayar) FROM transaksi") or die(mysqli_error($koneksi));
-                                                while ($total = mysqli_fetch_array($result)){?>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">Rp. <?php echo number_format($total['SUM(total_bayar)']); ?></div>
-                                            <?php 
-                                            }
-                                            ?>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-info shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                Jumlah Pesanan</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $jumlah_pesanan ?></div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class='bx bx-cart' style="color: #dddfeb; font-size:40px;"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Pending Requests Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-warning shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                Jumlah Produk</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $total_barang; ?></div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class='bx bxs-coin-stack' style="color: #dddfeb; font-size:40px;"></i>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    
+                                    <thead>
+                                        <tr>
+                                            <th>No.</th>
+                                            <th>Gambar</th>
+                                            <th>Kode Produk</th>
+                                            <th>Nama Produk</th>
+                                            <th>Deskripsi</th>
+                                            <th>Harga</th>
+                                            <th>Stok</th>
+                                            <th>Status</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php 
+                                    $i = 1;
+                                    $qry = mysqli_query($conn,"SELECT * FROM produk");
+                                    foreach($qry as $row){
+                                    ?>
+                                    <tr>
+                                            <td><?php echo $i++; ?></td>
+                                            <td><img src="img/<?= $row["gambar"]; ?>" width="50"></td>
+                                            <td><?= $row['id']; ?></td>
+                                            <td><?= $row['nama_barang']; ?></td>
+                                            <td><?= $row['deskripsi']; ?></td>
+                                            <td><?= $row['harga']; ?></td>
+                                            <td><?= $row['stok']; ?></td>
+                                            <td>
+                                            <?php if($row['status'] == 1): ?>
+                                                <span class="badge badge-success px-3 rounded-pill">Masih Ada</span>
+                                            <?php else: ?>
+                                                <span class="badge badge-danger px-3 rounded-pill">Stok Habis</span>
+                                            <?php endif; ?>
+                                            </td>
+                                            <td align="center">
+                                                <button type="button" class="btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                                                        Action
+                                                    <span class="sr-only">Toggle Dropdown</span>
+                                                </button>
+                                                <div class="dropdown-menu" role="menu">
+                                                    <a class="dropdown-item" href="update-produk.php?id=<?= $row["id"]; ?>"><span class="fa fa-edit text-primary"></span> Edit</a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a class="dropdown-item delete_data" href="delete.php?id=<?= $row["id"]; ?>"><span class="fa fa-trash text-danger"></span> Delete</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <?php 
+                                        }
+                                        ?>
+                                    </tbody>   
+                                </table>
                             </div>
                         </div>
                     </div>
 
-                    
-                    <!-- Content Row -->
-
-                    
+                </div>
+                <!-- /.container-fluid -->
 
             </div>
             <!-- End of Main Content -->
@@ -280,8 +252,13 @@ $jumlah_pesanan = mysqli_num_rows($pesanan);
         </div>
     </div>
 
+    <script>
+        $(document).ready( function () {
+        $('dataTable').DataTable();
+        } );
+    </script>
     <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
@@ -291,11 +268,12 @@ $jumlah_pesanan = mysqli_num_rows($pesanan);
     <script src="js/sb-admin-2.min.js"></script>
 
     <!-- Page level plugins -->
-    <script src="vendor/chart.js/Chart.min.js"></script>
+    <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.12.0/js/dataTables.bootstrap4.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
+    <script src="js/demo/datatables-demo.js"></script>
 
 </body>
+
 </html>

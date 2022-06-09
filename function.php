@@ -20,7 +20,29 @@ function query($query) {
 }
 
 
+function tambah($data) {
+	global $conn;
 
+	$nama = htmlspecialchars($data["nama_barang"]);
+	$deskripsi = $data["deskripsi"];
+	$stok = htmlspecialchars($data["stok"]);
+	$harga = htmlspecialchars($data["harga"]);
+	$status = $data["status"];
+
+	// upload gambar
+	$gambar = upload();
+	if( !$gambar ) {
+		return false;
+	}
+
+	$query = "INSERT INTO produk
+				VALUES
+			  ('', '$nama', '$deskripsi', '$stok', '$harga', '$status','$gambar')
+			";
+	mysqli_query($conn, $query);
+
+	return mysqli_affected_rows($conn);
+}
 
 
 function upload() {
@@ -39,7 +61,7 @@ function upload() {
 	}
 
 	// cek apakah yang diupload adalah gambar
-	$ekstensiGambarValid = ['jpg', 'jpeg', 'png'];
+	$ekstensiGambarValid = ['jpg', 'jpeg', 'png', 'webp'];
 	$ekstensiGambar = explode('.', $namaFile);
 	$ekstensiGambar = strtolower(end($ekstensiGambar));
 	if( !in_array($ekstensiGambar, $ekstensiGambarValid) ) {
@@ -78,6 +100,95 @@ function hapus($id) {
 }
 
 
+function ubah($data) {
+	global $conn;
+
+	$id = $data["id"];
+	$nama = htmlspecialchars($data["nama_barang"]);
+	$deskripsi = $data["deskripsi"];
+	$stok = htmlspecialchars($data["stok"]);
+	$harga = htmlspecialchars($data["harga"]);
+	$status = $data["status"];
+	$gambarLama = htmlspecialchars($data["gambarLama"]);
+	
+	// cek apakah user pilih gambar baru atau tidak
+	if( $_FILES['gambar']['error'] === 4 ) {
+		$gambar = $gambarLama;
+	} else {
+		$gambar = upload();
+	}
+	
+
+	$query = "UPDATE produk SET
+				nama_barang = '$nama',
+				deskripsi = '$deskripsi',
+				stok = '$stok',
+				harga = '$harga',
+				status = '$status',
+				gambar = '$gambar'
+			  WHERE id = $id
+			";
+
+	mysqli_query($conn, $query);
+
+	return mysqli_affected_rows($conn);	
+}
+
+function ubah_transaksi($data) {
+	global $conn;
+
+	$id = $data["id_pembelian"];
+	$id_pelanggan = htmlspecialchars($data["id_pelanggan"]);
+	$id_barang = $data["id_barang"];
+	$alamat = $data["alamat"];
+	$tanggal = $data["tanggal_transaksi"];
+	$status = $data["status_pembayaran"];
+	$jumlah = $data["jumlah"];
+	$total = $data["total_bayar"];
+
+	$query = "UPDATE transaksi SET
+				id_pelanggan = '$id_pelanggan',
+				id_barang = '$id_barang',
+				alamat = '$alamat',
+				tanggal_transaksi = '$tanggal',
+				status_pembayaran = '$status',
+				jumlah = '$jumlah',
+				total_bayar = '$total'
+			  WHERE id_pembelian = $id
+			";
+
+	mysqli_query($conn, $query);
+
+	return mysqli_affected_rows($conn);	
+}
+
+function ubah_akun($data) {
+	global $conn;
+
+	$id = $data["id"];
+	$nama = htmlspecialchars($data["nama"]);
+	$jk = $data["jk"];
+	$alamat = $data["alamat"];
+	$nohp = $data["nohp"];
+	$username = htmlspecialchars($data["username"]);
+	$password = $data["password"];
+
+	$password = password_hash($password, PASSWORD_DEFAULT);
+
+	$query = "UPDATE pelanggan SET
+				nama = '$nama',
+				jk = '$jk',
+				alamat = '$alamat',
+				nohp = '$nohp',
+				username = '$username',
+				password = '$password'
+			  WHERE id = $id
+			";
+
+	mysqli_query($conn, $query);
+
+	return mysqli_affected_rows($conn);	
+}
 
 function registrasi($data) {
 	global $conn;
@@ -85,11 +196,8 @@ function registrasi($data) {
 	$username = strtolower(stripslashes($data["username"]));
 	$password = mysqli_real_escape_string($conn, $data["password"]);
     $nama = $_POST['nama'];
-    $jk = $_POST['jk'];
-    $nohp = $_POST['nohp'];
-    $alamat = $_POST['alamat'];
 	// cek username sudah ada atau belum
-	$result = mysqli_query($conn, "SELECT username FROM pelanggan WHERE username = '$username'");
+	$result = mysqli_query($conn, "SELECT username FROM admins WHERE username = '$username'");
 
 	if( mysqli_fetch_assoc($result) ) {
 		echo "<script>
@@ -102,7 +210,7 @@ function registrasi($data) {
 	$password = password_hash($password, PASSWORD_DEFAULT);
 
 	// tambahkan userbaru ke database
-	mysqli_query($conn, "INSERT INTO pelanggan VALUES('','$nama','$jk','$nohp', '$username', '$password','$alamat')");
+	mysqli_query($conn, "INSERT INTO admins VALUES('','$nama', '$username', '$password')");
 
 	return mysqli_affected_rows($conn);
 
